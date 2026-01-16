@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_challange/core/extentions/context_extentions.dart';
 import 'package:todo_challange/core/widgets/app_ovelay_button.dart';
 import 'package:todo_challange/core/widgets/info_overlay_card.dart';
 import 'package:todo_challange/features/home/presentation/create_todo/widgets/create_todo_app_bar.dart';
@@ -31,121 +32,161 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CreateTodoAppBar(
-        onTapBack: () {
-          if (_titleController.text.isEmpty &&
-              _descriptionController.text.isEmpty) {
-            Navigator.of(context).pop();
-            return;
-          }
-
-          _overlayEntry = OverlayEntry(
-            builder: (overlayContext) {
-              return InfoOverlay(
-                onTap: _hideOverlay,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(Icons.info, size: 36, color: Colors.grey),
-                    Text(
-                      'Are your sure you want discard your changes ?',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 23,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Row(
-                      spacing: 35,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AppOvelayButton(
-                          buttonColor: Colors.red,
-                          text: 'Discard',
-                          onTap: () {
-                            _hideOverlay();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        AppOvelayButton(
-                          buttonColor: Colors.green,
-                          text: 'Keep',
-                          onTap: _hideOverlay,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-
-          Overlay.of(context).insert(_overlayEntry!);
-        },
-        onTapSave: () {
-          if (_titleController.text.isEmpty &&
-              _descriptionController.text.isEmpty) {
-            return;
-          }
-
-          _overlayEntry = OverlayEntry(
-            builder: (overlayContext) {
-              return InfoOverlay(
-                onTap: _hideOverlay,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(Icons.info, size: 36, color: Colors.grey),
-                    Text(
-                      'Save changes ?',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 23,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Row(
-                      spacing: 35,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AppOvelayButton(
-                          buttonColor: Colors.red,
-                          text: 'Discard',
-                          onTap: _hideOverlay,
-                        ),
-                        AppOvelayButton(
-                          buttonColor: Colors.green,
-                          text: 'Save',
-                          onTap: () {
-                            final uuid = Uuid().v1();
-                            final todo = Todo(
-                              title: _titleController.text,
-                              description: _descriptionController.text,
-                              id: uuid,
-                            );
-
-                            context.read<TodoCubit>().addTodo(todo);
-                            _hideOverlay();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-
-          Overlay.of(context).insert(_overlayEntry!);
-        },
+        onTapBack: _showDiscarOrKeepOverlay,
+        onTapSave: _showSaveOverlay,
       ),
       body: CreateTodoInputsSection(
         titleController: _titleController,
         descriptionController: _descriptionController,
       ),
     );
+  }
+
+  void _showDiscarOrKeepOverlay() {
+    if (_titleController.text.isEmpty && _descriptionController.text.isEmpty) {
+      Navigator.of(context).pop();
+      return;
+    }
+
+    _overlayEntry = OverlayEntry(
+      builder: (overlayContext) {
+        return InfoOverlay(
+          onTap: _hideOverlay,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.info, size: 36, color: Colors.grey),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Text(
+                  'Are your sure you want discard your changes ?',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 23,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Row(
+                spacing: 35,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppOvelayButton(
+                    buttonColor: Colors.red,
+                    text: 'Discard',
+                    onTap: () {
+                      _hideOverlay();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  AppOvelayButton(
+                    buttonColor: Colors.green,
+                    text: 'Keep',
+                    onTap: _hideOverlay,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _showSaveOverlay() {
+    _validateInputs();
+
+    _overlayEntry = OverlayEntry(
+      builder: (overlayContext) {
+        return InfoOverlay(
+          onTap: _hideOverlay,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.info, size: 36, color: Colors.grey),
+              Text(
+                'Save changes ?',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 23,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              Row(
+                spacing: 35,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppOvelayButton(
+                    buttonColor: Colors.red,
+                    text: 'Discard',
+                    onTap: _hideOverlay,
+                  ),
+                  AppOvelayButton(
+                    buttonColor: Colors.green,
+                    text: 'Save',
+                    onTap: () {
+                      final uuid = Uuid().v1();
+                      final todo = Todo(
+                        title: _titleController.text,
+                        description: _descriptionController.text,
+                        id: uuid,
+                      );
+
+                      context.read<TodoCubit>().createTodo(todo);
+                      _hideOverlay();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _validateInputs() {
+    if (_titleController.text.isEmpty && _descriptionController.text.isEmpty) {
+      context.showSnackBar(
+        SnackBar(
+          width: MediaQuery.of(context).size.width * 0.5,
+          content: Text('The title and description must not be empty.'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    } else if (_titleController.text.isEmpty) {
+      context.showSnackBar(
+        SnackBar(
+          width: MediaQuery.of(context).size.width * 0.5,
+          content: Text('The title must not be empty.'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    } else if (_descriptionController.text.isEmpty) {
+      context.showSnackBar(
+        SnackBar(
+          width: MediaQuery.of(context).size.width * 0.5,
+          content: Text('The description must not be empty.'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
   }
 
   @override

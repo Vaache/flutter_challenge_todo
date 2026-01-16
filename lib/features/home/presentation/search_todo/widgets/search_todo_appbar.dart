@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_challange/features/home/presentation/cubit/cubit/todo_cubit.dart';
 
 class SearchTodoAppbar extends StatelessWidget implements PreferredSizeWidget {
   const SearchTodoAppbar({
@@ -28,7 +30,10 @@ class SearchTodoAppbar extends StatelessWidget implements PreferredSizeWidget {
         ),
         decoration: InputDecoration(
           suffixIcon: GestureDetector(
-            onTap: Navigator.of(context).pop,
+            onTap: () {
+              context.read<TodoCubit>().clearFlitereTodos();
+              Navigator.of(context).pop();
+            },
             child: Icon(Icons.close, color: Colors.white),
           ),
           hint: Text(

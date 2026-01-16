@@ -14,11 +14,10 @@ class CreateTodoAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTapBack,
-      child: AppBar(
-        backgroundColor: appBackgroungColor,
-        leading: Transform.translate(
+    return AppBar(
+      leading: GestureDetector(
+        onTap: onTapBack,
+        child: Transform.translate(
           offset: Offset(28, 0),
           child: Container(
             padding: EdgeInsets.all(5),
@@ -34,21 +33,18 @@ class CreateTodoAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
-
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 21),
-            child: AppButton(
-              icon: (Icons.remove_red_eye_outlined),
-              onTap: () {},
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: 25),
-            child: AppButton(icon: (Icons.save_outlined), onTap: onTapSave),
-          ),
-        ],
       ),
+
+      actions: [
+        Padding(
+          padding: EdgeInsets.only(right: 21),
+          child: AppButton(icon: (Icons.remove_red_eye_outlined), onTap: () {}),
+        ),
+        Padding(
+          padding: EdgeInsets.only(right: 25),
+          child: AppButton(icon: (Icons.save_outlined), onTap: onTapSave),
+        ),
+      ],
     );
   }
 
