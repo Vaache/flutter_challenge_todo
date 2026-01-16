@@ -22,11 +22,11 @@ class ReadTodoAppbar extends StatelessWidget implements PreferredSizeWidget {
       valueListenable: isRedact,
       builder: (context, value, child) {
         return AppBar(
-          leading: GestureDetector(
-            onTap: !isRedact.value ? Navigator.of(context).pop : onTapBack,
-
-            child: Transform.translate(
-              offset: Offset(28, 0),
+          leading: Transform.translate(
+            offset: Offset(28, 0),
+            child: GestureDetector(
+              onTap: !isRedact.value ? Navigator.of(context).pop : onTapBack,
+              behavior: HitTestBehavior.opaque,
               child: Container(
                 padding: EdgeInsets.all(5),
                 decoration: BoxDecoration(

@@ -97,7 +97,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   }
 
   void _showSaveOverlay() {
-    _validateInputs();
+    if (!_validateInputs()) return;
 
     _overlayEntry = OverlayEntry(
       builder: (overlayContext) {
@@ -152,7 +152,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  void _validateInputs() {
+  bool _validateInputs() {
     if (_titleController.text.isEmpty && _descriptionController.text.isEmpty) {
       context.showSnackBar(
         SnackBar(
@@ -163,7 +163,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      return;
+      return false;
     } else if (_titleController.text.isEmpty) {
       context.showSnackBar(
         SnackBar(
@@ -174,7 +174,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      return;
+      return false;
     } else if (_descriptionController.text.isEmpty) {
       context.showSnackBar(
         SnackBar(
@@ -185,8 +185,10 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      return;
+      return false;
     }
+
+    return true;
   }
 
   @override
